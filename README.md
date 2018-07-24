@@ -17,3 +17,9 @@ cloud and home network support. Planned features:
 - ... more! 
 
 This is currently a work in progress and should be used in test environments only!
+
+Requirements to use the recipe in a test environment:
+
+- Chef Server (a virtual machine is preferred)
+- separated test network segment (homeserver starts a dhcp server!)
+- virtual server for tests with chef client installed (recipes are for Debian 9)

@@ -6,12 +6,12 @@ log_location             STDOUT
 cookbook_path            ["#{current_dir}/../cookbooks"]
 
 # check if there is a local file with additional settings specific for the local instance/machine
+
 if ::File.exist?(File.expand_path("../knife.local.rb", __FILE__))
   Chef::Config.from_file(File.expand_path("../knife.local.rb", __FILE__))
 end
 
 knife[:editor] = "/usr/bin/vi"
-
 
 # Example for a local knife configuration file:
 
