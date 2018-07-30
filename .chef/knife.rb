@@ -5,15 +5,20 @@ log_level                :debug
 log_location             STDOUT
 cookbook_path            ["#{current_dir}/../cookbooks"]
 
-# check if there is a local file with additional settings specific for the local instance/machine
-
-if ::File.exist?(File.expand_path("../knife.local.rb", __FILE__))
-  Chef::Config.from_file(File.expand_path("../knife.local.rb", __FILE__))
-end
-
 knife[:editor] = "/usr/bin/vi"
 
+
+# TODO: Add reference to knife.local.rb - but how?
+puts "Hello?"
+root_dir = File.dirname(__FILE__)
+puts "root dir is " + root_dir
+conf = File.join(root_dir, "knife.local.rb")
+puts "conf is " + conf
+Kernel::load(conf) if File.exists? conf
+
+####
 # Example for a local knife configuration file:
+####
 
 #node_name                "chefadmin"
 #client_key               "#{current_dir}/chefadmin.pem"
@@ -22,4 +27,4 @@ knife[:editor] = "/usr/bin/vi"
 # Copyright and Author settings
 #knife[:cookbook_copyright] = 'Max Mustermann'
 #knife[:cookbook_email] = 'none@example.com'
-#knife[:cookbook_license] = 'apachev2'
+#knife[:cookbook_license] = 'apacasdhev2'
