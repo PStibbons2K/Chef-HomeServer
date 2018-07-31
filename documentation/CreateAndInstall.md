@@ -5,3 +5,9 @@
   
 - Create cookbook
   "chef generate cookbook homeserver"
+  
+- Create recipe
+  "chef generate recipe recipes/<name>"
+
+- Create Environment
+  "knife environment create ENVIRONMENT

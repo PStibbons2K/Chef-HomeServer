@@ -20,6 +20,7 @@ This is currently a work in progress and should be used in test environments onl
 
 Requirements to use the recipe in a test environment:
 
-- Chef Server (a virtual machine is preferred)
+- A Chef Server (a virtual machine is preferred)
 - separated test network segment (homeserver starts a dhcp server!)
 - virtual server for tests with chef client installed (recipes are for Debian 9)
+- a dedicated virtual client in the test network segment for tests
