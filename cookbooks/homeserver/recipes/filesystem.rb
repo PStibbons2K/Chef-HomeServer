@@ -15,3 +15,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# install zfs on linux package
+package 'zfsutils-linux'
+package 'zfs-auto-snapshot'
+
+# zfs-dkms needs a "yes"?
+# zfs-auto-snapshot is also creating cronjobs for snapshots!
+# should the "keep"-amount be configurable? if yes - add templates?

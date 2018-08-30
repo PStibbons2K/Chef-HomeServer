@@ -15,3 +15,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+
+
+# run samba as simple file server or as active directory server?
+# dc provision would be:
+# #samba-tool domain provision --use-rcf2307 --realm test.intra.zimmermann.family --domain test --server-role=dc --dns-backend=SAMBA_INTERNAL --adminpass=P@ssw0rd
