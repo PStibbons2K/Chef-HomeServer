@@ -7,14 +7,15 @@ ntpsrv currently uses the following packages:
 
 ## Configuration
 
-Currently using the default configuration provided by the debian package
+Currently using the default configuration provided by the debian package without changes
 
 ## Runtime data
 
 There are two main data areas for runtime data
 
-# Logging
+## Logging
 
+Logging is done via the syslog facilities
 
 ## Backup
 
