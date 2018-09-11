@@ -1,0 +1,25 @@
+{
+  "name": "prod",
+  "description": "Production environment",
+  "cookbook_versions": {
+
+  },
+  "json_class": "Chef::Environment",
+  "chef_type": "environment",
+
+  "default_attributes": {
+    "network": {
+      "address": "192.168.114",
+      "netmask": "255.255.255.0",
+      "dhcp": {
+        "range_start": "192.168.114.50",
+        "range_end": "192.168.114.150",
+        "lease_duration": "12h"
+      }
+    }
+  },
+
+  "override_attributes": {
+
+  }
+}
