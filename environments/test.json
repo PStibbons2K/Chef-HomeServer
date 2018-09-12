@@ -1,0 +1,31 @@
+{
+  "name": "test",
+  "description": "Test environment",
+  "cookbook_versions": {
+
+  },
+  "json_class": "Chef::Environment",
+  "chef_type": "environment",
+
+  "default_attributes": {
+    "main": {
+      "hostname": "vhomesrv",
+      "domain": "test.intra.zimmermann.family",
+      "krb_domain": "TEST.INTRA.ZIMMERMANN.FAMILY"
+    },
+    "network": {
+      "address": "192.168.99",
+      "netmask": "255.255.255.0",
+      "server_ip": "192.168.99.10",
+      "dhcp": {
+        "range_start": "192.168.99.50",
+        "range_end": "192.168.99.150",
+        "lease_duration": "12h"
+      }
+    }
+  },
+
+  "override_attributes": {
+
+  }
+}
