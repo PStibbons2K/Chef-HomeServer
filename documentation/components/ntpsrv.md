@@ -9,6 +9,8 @@ ntpsrv currently uses the following packages:
 
 Currently using the default configuration provided by the debian package without changes
 
+## Templates
+
 ## Runtime data
 
 There are two main data areas for runtime data

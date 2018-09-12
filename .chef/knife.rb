@@ -1,20 +1,18 @@
 # See https://docs.getchef.com/config_rb_knife.html for more information on knife configuration options
 
 current_dir = File.dirname(__FILE__)
+knife_override = "#{current_dir}/knife.local.rb"
 log_level                :debug
 log_location             STDOUT
 cookbook_path            ["#{current_dir}/../cookbooks"]
 
 knife[:editor] = "/usr/bin/vi"
 
-
 # TODO: Add reference to knife.local.rb - but how?
-puts "Hello?"
-root_dir = File.dirname(__FILE__)
-puts "root dir is " + root_dir
-conf = File.join(root_dir, "knife.local.rb")
-puts "conf is " + conf
-Kernel::load(conf) if File.exists? conf
+if File.exist?(knife_override)
+  ::Chef::Log.info("Loading user-specific configuration from #{knife_override}") if defined?(::Chef)
+  instance_eval(IO.read(knife_override), knife_override, 1)
+end
 
 ####
 # Example for a local knife configuration file:
