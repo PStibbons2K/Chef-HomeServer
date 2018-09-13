@@ -1,0 +1,22 @@
+# TODO: This file needs rework!
+
+[sssd]
+config_file_version = 2
+services = nss, pam
+domains = ${KRB5_REALMNAME}
+
+[domain/${KRB5_REALMNAME}]
+id_provider = ldap
+ldap_uri = ldap://${SERVER_NAME}.${DNS_REALMNAME}
+ldap_search_base = ${LDAP_BASEDN}
+ldap_schema = rfc2307bis
+ldap_sasl_mech = GSSAPI
+ldap_sasl_authid = host/${SERVER_NAME}.${DNS_REALMNAME}@${KRB5_REALMNAME}
+ldap_krb5_keytab = /etc/krb5.keytab
+ldap_tls_cacert = /etc/ssl/certs/cert_${SERVER_NAME}.${DNS_REALMNAME}.pem
+ldap_id_use_start_tls = true
+auth_provider = krb5
+krb5_realm = ${KRB5_REALMNAME}
+krb5_server = ${SERVER_NAME}.${DNS_REALMNAME}
+krb5_validate = true
+enumerate = true

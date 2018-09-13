@@ -1,0 +1,11 @@
+[libdefaults]
+    default_realm = INTRA.ZIMMERMANN.FAMILY
+
+[realms]
+    EXAMPLE.COM = {
+            kdc = example.net:60088
+    }
+
+[domain_realm]
+    .example.com = EXAMPLE.COM
+    example.com = EXAMPLE.COM
