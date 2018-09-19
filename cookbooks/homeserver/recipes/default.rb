@@ -16,17 +16,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+# This is the master recipe for the full homeserver
+# installation, all other recipes are loaded and
+# executed here.
+
 # Step 01 - Linux basics
-include_recipe 'homeserver::linux_basics'
+#include_recipe 'homeserver::linux_basics'
 
 # Step 01b - Hardware dependent packages
-include_recipe 'homeserver::hardware'
+#include_recipe 'homeserver::hardware'
 
 # Step 02 - ZFS filesystem
-include_recipe 'homeserver::filesystem'
+#include_recipe 'homeserver::filesystem'
 
 # Step 02 - DNSMasq DNS/DHCP server
-include_recipe 'homeserver::dnsmasq'
+#include_recipe 'homeserver::dnsmasq'
 
 # Step 03 - NTP timeserver
-include_recipe 'homeserver::ntpsrv'
+#include_recipe 'homeserver::ntpd'
+
+# Step 04 - LDAP server
+#include_recipe 'homeserver::ldapsrv'
+
+# Step 04b - Kerberos server
+#include_recipe 'homeserver::kerberos'
+
+# Step 04c - SSSD as login frontend
+#include_recipe 'homeserver::sssd'
+
+# Step 05 - MariaDB server
+#include_recipe 'homeserver::mariadb'
+
+#include_recipe 'homeserver::websrv'
+
+#include_recipe 'homeserver::monitoring'

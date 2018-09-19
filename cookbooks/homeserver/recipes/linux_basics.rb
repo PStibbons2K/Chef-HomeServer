@@ -22,14 +22,14 @@
 
 # add contrib and non-free repositories
 apt_repository 'debian-main' do
-  uri           'http://ftp.de.debian.org/debian/'
-  distribution  'stretch'
-  components    ['contrib','non-free']
-  deb_src       true
+  uri 		'http://ftp.de.debian.org/debian/'
+  distribution	'stretch'
+  components	['contrib','non-free']
+  deb_src 	true
 end
 
 apt_repository 'debian-security' do
-  uri           'http://security.debian.org/debian-security'
+  uri		'http://security.debian.org/debian-security'
   distribution  'stretch/updates'
   components    ['contrib','non-free']
   deb_src       true
