@@ -15,3 +15,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# Step 01 - Linux basics
+include_recipe 'homeserver::linux_basics'
+
+# Step 01b - Hardware dependent packages
+include_recipe 'homeserver::hardware'
+
+# Step 02 - ZFS filesystem
+include_recipe 'homeserver::filesystem'
+
+# Step 02 - DNSMasq DNS/DHCP server
+include_recipe 'homeserver::dnsmasq'
+
+# Step 03 - NTP timeserver
+include_recipe 'homeserver::ntpsrv'

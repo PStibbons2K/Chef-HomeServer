@@ -11,3 +11,9 @@
 
 - Create Environment
   "knife environment create ENVIRONMENT
+  
+- Create Template file
+  " knife "
+  
+- Upload Cookbook
+  "knife cookbook upload homeserver"

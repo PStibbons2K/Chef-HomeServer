@@ -15,3 +15,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# install the dnsmasq package
+package 'dnsmasq'
+
+# create a service and start it
+service "dnsmasq" do
+  action :start
+end
+
+# copy the configuration template
+template '/etc/dnsmasq.conf' do
+  source 'dnsmasq.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0640'
+  notifies :restart, "service[dnsmasq]"
+end
+
+# create a file with all static mappings
+# config format has to be defined!

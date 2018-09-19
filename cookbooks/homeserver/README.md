@@ -1,4 +1,3 @@
 # homeserver
 
-TODO: Enter the cookbook description here.
-
+This cookbook installs a full lhomeserver wirth manyd useful features
