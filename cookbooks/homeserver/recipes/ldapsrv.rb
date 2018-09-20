@@ -23,64 +23,46 @@
 # Install the default java runtime (should be enough for now?) and
 # additional packages
 
-package 'default-jdk'
 package 'krb5-user'
-
-# prepare Apache DS download
-# TODO: replace the version numbers with a variable
-# TODO: only download once?
-# TODO: place in a software repository folder?
-
-remote_file "/tmp/apacheds-2.0.0-M24-amd64.deb" do
-  source "http://apache.lauf-forum.at/directory/apacheds/dist/2.0.0-M24/apacheds-2.0.0-M24-amd64.deb"
-  mode 0644
-end
+package 'ldap-utils'
+package 'slapd'
 
 # prepare the ssl certificates
 # TODO: prepare ssl certificates
 
-# create dnsmasq config snippet for ldapsrv.<net-name> alias name
-template '/etc/dnsmasq.d/ldapsrv-dnsmasq.conf' do
-  source 'ldapsrv-dnsmasq.conf.erb'
+# create a temp dir for ldif and other data
+directory '/tmp/ldap_data' do
+  owner 'root'
+  group 'root'
+  mode '0755'
+  recursive true
+  action :create
+end
+
+# put schema data ldif
+template '/tmp/ldap_data/ldap_schemata.ldif' do
+  source 'ldap_schemata.ldif.erb'
   owner 'root'
   group 'root'
   mode '0640'
-  notifies :restart, "service[dnsmasq]"
+  notifies :run, 'execute[slapadd]', :immediately
 end
 
-################################
-# Install the directory server
-################################
-
-# install the downloaded package
-dpkg_package "apacheds" do
-  source "/tmp/apacheds-2.0.0-M24-amd64.deb"
-  action :install
+execute 'slapadd' do
+  command 'slapadd < /tmp/something.ldif'
+  creates '/var/lib/slapd/uid.bdb'
+  action :nothing
 end
 
-# replace the default config file before initial server initialization
-# this is not repeatable, should the recipe rely on it?
+template '/tmp/something.ldif' do
+  source 'something.ldif'
+  notifies :run, 'execute[slapadd]', :immediately
+end
 
-# create a service for apacheds
-service 'apacheds' do
+# load schema data
+
+# create a service, enable and start it
+service 'slapd' do
   supports [:start, :restart, :status]
   action [:enable, :start]
 end
-
-# TODO: Configuration for the apache ds instance
-
-# - configure admin account / password
-# - enable ssl transport chain
-# - disable non-ssl transport chain
-# - check if all required schemata are loaded
-# - reconfigure root DN
-# - create and load ldif data (only if necessary!)
-# - enable kerberos server
-# - place krb5.conf from template
-
-
-
-# Changes to apacheds configuration so far:
-# -replace dc=example,dc=com with the "real" domain name
-# - enable schemata:
-#   - nis (for posixGroup and posixUser)

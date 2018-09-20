@@ -13,7 +13,7 @@
   "knife environment create ENVIRONMENT
   
 - Create Template file
-  " knife "
+  " chef generate template <name> "
   
 - Upload Cookbook
   "knife cookbook upload homeserver"
