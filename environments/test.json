@@ -22,6 +22,9 @@
         "range_end": "192.168.99.150",
         "lease_duration": "12h"
       }
+    },
+    "ldap": {
+      "domain": "dc=test,dc=intra,dc=zimmermann,dc=family"
     }
   },
 
