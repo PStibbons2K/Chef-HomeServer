@@ -16,8 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-#bbase64Value = Array.new
+#require "base64"
 
 ################################
 # Prepare required environment
@@ -45,6 +44,11 @@ dpkg_package "apacheds" do
   action :install
 end
 
+# build the config string for <id> if needed
+myStr = String.new("THIS IS TEST")
+enc   = Base64.encode64(myStr)
+node.set['ldap_ads-contextentry'] = enc
+
 # check if the config file has already been read - file name changes from config.ldif to config.ldif_migrated
 # if not migrated yet replace with our template, otherwise this step has happened already
 # after the initial setup script all further changes need to be done via ldif files
@@ -55,20 +59,6 @@ template '/var/lib/apacheds-2.0.0.AM25/default/conf/config.ldif' do
   owner 'root'
   group 'root'
   mode '0640'
-end
-
-# this should somehow return a base64 encoded string for the template file - but how?
-execute 'ldap_base64encode' do
-  command 'base64 /tmp/ldap_base64.txt'
-  action :nothing
-  returns base64Value
-end
-
-# prepare the template for the base64 encoded value for "ads-contextentry"
-template '/tmp/ldap_base64.txt' do
-  not_if { ::File.exist?('/var/lib/apacheds-2.0.0.AM25/default/conf/config.ldif_migrated') }
-  source 'ldap_base64.txt.erb'
-  notifies :run, 'execute[ldap_base64encode]', :immediately
 end
 
 # create a service and enable / start it

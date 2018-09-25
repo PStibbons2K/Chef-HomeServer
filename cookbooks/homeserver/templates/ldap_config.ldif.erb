@@ -404,8 +404,7 @@ objectClass: ads-base
 objectclass: ads-partition
 objectclass: ads-jdbmPartition
 ads-partitionSuffix: <%= node['ldap']['domain'] %>
-ads-contextentry:: ZG46IGRjPWV4YW1wbGUsZGM9Y29tCmRjOiBleGFtcGxlCm9iamVjdGNsY
- XNzOiBkb21haW4Kb2JqZWN0Y2xhc3M6IHRvcAoK
+ads-contextentry:: <%= node['ldap_ads-contextentry'] %>
 ads-jdbmpartitionoptimizerenabled: TRUE
 ads-partitioncachesize: 10000
 ads-partitionsynconwrite: TRUE
