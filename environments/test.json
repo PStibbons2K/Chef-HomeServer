@@ -25,6 +25,9 @@
     },
     "ldap": {
       "domain": "dc=test,dc=intra,dc=zimmermann,dc=family"
+    },
+    "openldap": {
+      "rootpw": "P@ssw0rd"
     }
   },
 
