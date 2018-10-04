@@ -16,68 +16,94 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#require "base64"
+# prepare ssl certificate files
 
-################################
-# Prepare required environment
-################################
-
-# Install the default java runtime (should be enough for now?) and
-# additional packages
-
-# TODO: Add package name and/or version string as variables?
-
-package 'krb5-user'
+# install misc tools
 package 'ldap-utils'
 
-remote_file "/tmp/apacheds-2.0.0.AM25-amd64.deb" do
-  source "http://mirror.dkd.de/apache//directory/apacheds/dist/2.0.0.AM25/apacheds-2.0.0.AM25-amd64.deb"
-  mode 0644
+# TODO: is this needed?
+#package 'libsasl2-modules-gssapi-mit'
+
+# install slapd package with preseeded values
+# TODO: Remove Passwords, at least for production!
+package 'slapd' do
+  response_file 'slapd.seed'
 end
 
-# prepare the ssl certificates
-# TODO: prepare ssl certificates
-
-# install downloaded package
-dpkg_package "apacheds" do
-  source "/tmp/apacheds-2.0.0.AM25-amd64.deb"
-  action :install
-end
-
-# build the config string for <id> if needed
-myStr = String.new("THIS IS TEST")
-enc   = Base64.encode64(myStr)
-node.set['ldap_ads-contextentry'] = enc
-
-# check if the config file has already been read - file name changes from config.ldif to config.ldif_migrated
-# if not migrated yet replace with our template, otherwise this step has happened already
-# after the initial setup script all further changes need to be done via ldif files
-
-template '/var/lib/apacheds-2.0.0.AM25/default/conf/config.ldif' do
-  not_if { ::File.exist?('/var/lib/apacheds-2.0.0.AM25/default/conf/config.ldif_migrated') }
-  source 'ldap_config.ldif.erb'
-  owner 'root'
-  group 'root'
-  mode '0640'
-end
-
-# create a service and enable / start it
-service 'apacheds' do
+# Create the service, start and enable it
+service "slapd" do
   supports [:start, :restart, :status]
   action [:enable, :start]
 end
 
-# Required changes to the default config.ldif file
-# ** ads-dsallowanonymousaccess: TRUE
-# -> ads-dsallowanonymousaccess: FALSE
-# ** dn: ads-partitionId=example,ou=partitions,ads-directoryServiceId=default,ou=config
-# -> dn: ads-partitionId=example,ou=partitions,ads-directoryServiceId=default,ou=config
-# ** ads-partitionSuffix: dc=example,dc=com
-# -> ads-partitionSuffix: dc=test,dc=intra,dc=zimmermann,dc=family
-# ** ads-partitionid: example
-# -> ads-partitionid: test-intra
-# replace all other hits for "ads-partitionId=example" with "ads-partitionId=test-intra"
-# base64 encoding is needed for a part of the informations
-# see https://directory.apache.org/apacheds/basic-ug/1.4.3-adding-partition.html
-# TODO: enable needed schemata here or in specific recipes?
-# Schema are here: DN: cn=nis,ou=schema
+# Add openLDAP user to ssl-cert group
+group 'ssl-cert' do
+  action :modify
+  append true
+  members "openldap"
+end
+
+# create client config file
+template '/etc/ldap/ldap.conf' do
+  source 'ldap.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+end
+
+# put additional schema files and load them
+cookbook_file "/etc/ldap/schema/groupfoentries.ldif" do
+  source "default/ldap/schema/groupofentries.ldif"
+  not_if { ::File.exist?('/etc/ldap/schema/groupfoentries.ldif') }
+  owner 'root'
+  group 'root'
+  mode '0644'
+  #notifies :run, 'execute[ldapadd_groupofentries]', :immediately
+end
+
+cookbook_file "/etc/ldap/schema/rfc2307bis.schema" do
+  not_if { ::File.exist?('/etc/ldap/schema/rfc2307bis.schema') }
+  source "default/ldap/schema/rfc2307bis.schema"
+  owner 'root'
+  group 'root'
+  mode '0644'
+  #notifies :run, 'execute[ldapadd]', :immediately
+end
+
+
+
+# create basic structure
+template '/root/ldap_modify.ldif' do
+  source 'ldap_modify.ldif.erb'
+  owner 'root'
+  group 'root'
+  mode '0600'
+  #notifies :run, 'execute[ldapadd_modify]', :immediately
+end
+
+# # Modify NIS schema - posixGroup should be auxiliary
+
+# set ACLs
+
+# create basic structure
+
+# set TLS parameters
+
+
+
+# executes for several templates and ldif files
+
+execute 'ldapadd_groupofentries' do
+  command 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/groupfoentries.ldif'
+  action :nothing
+end
+
+execute 'ldapadd_rfc2307bis' do
+  command 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/rfc2307bis.schema'
+  action :nothing
+end
+
+execute 'ldapadd_modify' do
+  command 'ldapadd -Y EXTERNAL -H ldapi:/// -f /root/ldap_modify.ldif'
+  action :nothing
+end

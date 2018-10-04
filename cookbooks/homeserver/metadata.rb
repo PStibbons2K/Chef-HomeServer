@@ -18,3 +18,5 @@ chef_version '>= 12.14' if respond_to?(:chef_version)
 # a Supermarket.
 #
 # source_url 'https://github.com/<insert_org_here>/homeserver'
+
+depends 'openldap', '>= 4.0.0'

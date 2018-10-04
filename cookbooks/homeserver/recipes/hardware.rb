@@ -52,9 +52,9 @@ package 'lm-sensors'
 # - compile ftsteutates kernel module
 # - run sensors-detect
 # - modify /etc/modules
+# TODO: New - possibly the config file for lmsensors is enough?
 
 # TODO: check if sensors-detect can be run here?
-
 
 ##################################################
 # other hardware modules - e.g. missing firmware

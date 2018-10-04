@@ -20,14 +20,16 @@
       "dhcp": {
         "range_start": "192.168.99.50",
         "range_end": "192.168.99.150",
-        "lease_duration": "12h"
+        "lease_duration": "12h",
+        "static_hosts": {
+          "sample-printer": {"mac":"00:1b:a9:00:00:00","ip":"192.168.99.20","duration":"infinite"},
+          "sample-tv": {"mac":"00:1b:a9:00:00:00","ip":"192.168.99.21","duration":"infinite"},
+          "sample-srv": {"mac":"00:1b:a9:00:00:00","ip":"192.168.99.22","duration":"infinite"}
+        }
       }
     },
     "ldap": {
       "domain": "dc=test,dc=intra,dc=zimmermann,dc=family"
-    },
-    "openldap": {
-      "rootpw": "P@ssw0rd"
     }
   },
 

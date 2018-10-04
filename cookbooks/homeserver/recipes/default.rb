@@ -39,13 +39,16 @@ include_recipe 'homeserver::ntpsrv'
 # Step 04 - LDAP server
 include_recipe 'homeserver::ldapsrv'
 
-# Step 04b - Kerberos server
-#include_recipe 'homeserver::kerberos'
+# Step 05 - Kerberos server
+include_recipe 'homeserver::kerberos'
 
-# Step 04c - SSSD as login frontend
-#include_recipe 'homeserver::sssd'
+# Step 06 - SSSD as login frontend
+include_recipe 'homeserver::sssd'
 
-# Step 05 - MariaDB server
+# Step 07 - Samba server
+include_recipe 'homeserver::sambasrv'
+
+# Step 08 - MariaDB server
 #include_recipe 'homeserver::mariadb'
 
 #include_recipe 'homeserver::websrv'

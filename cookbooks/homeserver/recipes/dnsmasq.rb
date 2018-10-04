@@ -33,5 +33,13 @@ template '/etc/dnsmasq.conf' do
   notifies :restart, "service[dnsmasq]"
 end
 
-# create a file with all static mappings
-# config format has to be defined!
+# create the static host mapping config
+# TODO: Add a check or guard to prevent template file if no static host is defined
+template '/etc/dnsmasq.d/static-dnsmasq.conf' do
+  source 'dnsmasq_static.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0640'
+  variables ( {:static_hosts => node['network']['dhcp']['static_hosts'] } )
+  notifies :restart, "service[dnsmasq]"
+end
