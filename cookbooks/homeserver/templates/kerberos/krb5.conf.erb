@@ -1,0 +1,12 @@
+[libdefaults]
+  default_realm = <%= node['kerberos']['realm'] %>
+
+[realms]
+  <%= node['kerberos']['realm'] %> = {
+    kdc = <%= node['main']['hostname'] %>.<%= node['main']['domain'] %>
+    admin_server = <%= node['main']['hostname'] %>.<%= node['main']['domain'] %>
+  }
+
+[domain_realm]
+  <%= node['main']['domain'] %> = <%= node['kerberos']['realm'] %>
+  .<%= node['main']['domain'] %> = <%= node['kerberos']['realm'] %>

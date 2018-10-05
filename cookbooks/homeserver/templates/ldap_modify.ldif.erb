@@ -1,0 +1,88 @@
+######################################################
+# Add admin account for cn=config
+######################################################
+
+# this entry is already there after installation
+#dn: olcDatabase={0}config,cn=config
+#changetype: modify
+#add: olcRootDN
+#olcRootDN: cn=admin,cn=config
+
+# does this disable the ldapi access?
+dn: olcDatabase={0}config,cn=config
+changetype: modify
+add: olcRootPW
+olcRootPW: {SSHA}b8QhA4caVcAzoa+2IURpS7EFIw0xrPQs
+
+##############################################################
+# Set ACLs
+##############################################################
+
+#{0}to attrs=userPassword,shadowLastChange
+#               by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth write
+#               by group="cn=LDAP Read Write,ou=groups,<%= node['ldap']['domain'] %>" write
+#               by group="cn=LDAP Read Only,ou=groups,<%= node['ldap']['domain'] %>" read
+#               by self write
+#               by anonymous auth
+#               by * none
+#{1}to attrs=cn,dc,gecos,gidNumber,homeDirectory,loginShell,member,memberUid,objectClass,ou,sn,uid,uidNumber,uniqueMember,entry
+#               by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write
+#               by group="cn=LDAP Read Write,ou=groups,<%= node['ldap']['domain'] %>" write
+#               by group="cn=LDAP Read Only,ou=groups,<%= node['ldap']['domain'] %>" read
+#               by users read
+#               by anonymous auth
+#               by * none
+#{2} to dn.base=""
+#               by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write
+#               by group="cn=LDAP Read Write,ou=groups,<%= node['ldap']['domain'] %>" write
+#               by group="cn=LDAP Read Only,ou=groups,<%= node['ldap']['domain'] %>" read
+#               by * read
+#{3} to *
+#               by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write
+#               by group="cn=LDAP Read Write,ou=groups,<%= node['ldap']['domain'] %>" write
+#               by group="cn=LDAP Read Only,ou=groups,<%= node['ldap']['domain'] %>" read
+#               by * read
+
+
+# One-Liner:
+#to attrs=userPassword,shadowLastChange by dn.exact=gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth write by group="cn=LDAP Read Write,ou=groups,<%= node['ldap']['domain'] %>" write by group="cn=LDAP Read Only,ou=groups,<%= node['ldap']['domain'] %>" read by self write by anonymous auth
+#to attrs=cn,dc,gecos,gidNumber,homeDirectory,loginShell,member,memberUid,objectClass,ou,sn,uid,uidNumber,uniqueMember,entry by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by group="cn=LDAP Read Write,ou=groups,<%= node['ldap']['domain'] %>" write by group="cn=LDAP Read Only,ou=groups,<%= node['ldap']['domain'] %>" read by users read by anonymous auth by * none
+#to dn.base="" by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by group="cn=LDAP Read Write,ou=groups,<%= node['ldap']['domain'] %>" write by group="cn=LDAP Read Only,ou=groups,<%= node['ldap']['domain'] %>" read by * read
+#to * by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by group="cn=LDAP Read Write,ou=groups,<%= node['ldap']['domain'] %>" write by group="cn=LDAP Read Only,ou=groups,<%= node['ldap']['domain'] %>" read by * read
+
+
+# TODO: Replace first try witout ldap groups - damn, access with ldapi does not work without the gidNumber-Entry
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+replace: olcAccess
+olcAccess: to attrs=userPassword,shadowLastChange by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by self write by anonymous auth
+olcAccess: to attrs=cn,dc,gecos,gidNumber,homeDirectory,loginShell,member,memberUid,objectClass,ou,sn,uid,uidNumber,uniqueMember,entry by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by users read by anonymous auth by * none
+olcAccess: to dn.base="" by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by * read
+olcAccess: to * by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by * read
+
+
+
+
+######################################################
+# Basic structure for users, services etc
+######################################################
+
+#dn: ou=users,<%= node['ldap']['domain'] %>
+#objectClass: top
+#objectClass: organizationalUnit
+#ou: users
+#
+#dn: ou=people,ou=users,<%= node['ldap']['domain'] %>
+#objectClass: top
+#objectClass: organizationalUnit
+#ou: people#
+#
+#dn: ou=services,ou=users,<%= node['ldap']['domain'] %>
+#objectClass: top
+#objectClass: organizationalUnit
+#ou: people
+#
+#dn: ou=groups,<%= node['ldap']['domain'] %>
+#objectClass: top
+#objectClass: organizationalUnit
+#ou: groups

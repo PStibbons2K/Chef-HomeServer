@@ -43,67 +43,90 @@ group 'ssl-cert' do
   members "openldap"
 end
 
-# create client config file
-template '/etc/ldap/ldap.conf' do
-  source 'ldap.conf.erb'
+# add dnsmasq config snippet
+template '/etc/dnsmasq.d/ldapsrv-dnsmasq.conf' do
+  source 'ldap/ldapsrv-dnsmasq.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0640'
+  notifies :restart, "service[dnsmasq]"
+end
+
+
+# TODO: Set correct permissions for certificate files
+# TODO: Replace hard coded domain name with variable from environment
+file '/etc/ssl/certs/cert_ldapsrv.test.intra.zimmermann.family.pem' do
   owner 'root'
   group 'root'
   mode '0644'
 end
 
-# put additional schema files and load them
+file '/etc/ssl/private/key_ldapsrv.test.intra.zimmermann.family.pem' do
+  owner 'root'
+  group 'ssl-cert'
+  mode '0640'
+end
+
+# create client config file
+template '/etc/ldap/ldap.conf' do
+  source 'ldap/ldap.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+end
+
+# Load additional schema "groupofentries" to allow empty groups
 cookbook_file "/etc/ldap/schema/groupfoentries.ldif" do
   source "default/ldap/schema/groupofentries.ldif"
   not_if { ::File.exist?('/etc/ldap/schema/groupfoentries.ldif') }
   owner 'root'
   group 'root'
   mode '0644'
-  #notifies :run, 'execute[ldapadd_groupofentries]', :immediately
+  notifies :run, 'execute[ldapadd_groupofentries]', :immediately
 end
 
-cookbook_file "/etc/ldap/schema/rfc2307bis.schema" do
-  not_if { ::File.exist?('/etc/ldap/schema/rfc2307bis.schema') }
-  source "default/ldap/schema/rfc2307bis.schema"
-  owner 'root'
-  group 'root'
-  mode '0644'
-  #notifies :run, 'execute[ldapadd]', :immediately
-end
-
-
-
-# create basic structure
-template '/root/ldap_modify.ldif' do
-  source 'ldap_modify.ldif.erb'
+# load ldif with changes for the cn=config tree
+template '/root/modify_slapd_01.ldif' do
+  source 'ldap/modify_slapd_01.ldif.erb'
   owner 'root'
   group 'root'
   mode '0600'
-  #notifies :run, 'execute[ldapadd_modify]', :immediately
+  notifies :restart, 'service[slapd]', :immediately
+  notifies :run, 'execute[ldapadd_modify_01]', :immediately
 end
 
-# # Modify NIS schema - posixGroup should be auxiliary
+# load ldif with changes for the data tree
+template '/root/modify_slapd_02.ldif' do
+  source 'ldap/modify_slapd_02.ldif.erb'
+  owner 'root'
+  group 'root'
+  mode '0600'
+  notifies :run, 'execute[ldapadd_modify_02]', :immediately
+end
 
-# set ACLs
+# TODO: Check if ldaps needs to be enabled via
+# SLAPD_SERVICES="ldap:/// ldapi:///"
+# in /etc/default/slapd
 
-# create basic structure
+# TODO: create monitoring snippets
 
-# set TLS parameters
-
-
-
+################################################
 # executes for several templates and ldif files
+################################################
 
 execute 'ldapadd_groupofentries' do
   command 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/groupfoentries.ldif'
   action :nothing
 end
 
-execute 'ldapadd_rfc2307bis' do
-  command 'ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/ldap/schema/rfc2307bis.schema'
+execute 'ldapadd_modify_01' do
+  command 'ldapadd -Y EXTERNAL -H ldapi:/// -c -f /root/modify_slapd_01.ldif'
   action :nothing
+  returns [0,80]
 end
 
-execute 'ldapadd_modify' do
-  command 'ldapadd -Y EXTERNAL -H ldapi:/// -f /root/ldap_modify.ldif'
+execute 'ldapadd_modify_02' do
+  command 'ldapadd -Y EXTERNAL -H ldapi:/// -c -f /root/modify_slapd_02.ldif'
   action :nothing
+  returns [0,68,32]
 end

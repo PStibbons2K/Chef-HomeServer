@@ -1,0 +1,49 @@
+######################################################
+# Initial Changes to the data tree
+# this configures the layout and some initial groups,
+# configuration for other applications (e.g. samba,
+# kerberos) is done in the application scripts
+######################################################
+
+######################################################
+# Basic structure for users, services etc
+######################################################
+
+dn: ou=users,<%= node['ldap']['domain'] %>
+objectClass: top
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=people,ou=users,<%= node['ldap']['domain'] %>
+objectClass: top
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=services,ou=users,<%= node['ldap']['domain'] %>
+objectClass: top
+objectClass: organizationalUnit
+ou: services
+
+dn: ou=groups,<%= node['ldap']['domain'] %>
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
+
+dn: ou=services,<%= node['ldap']['domain'] %>
+objectClass: top
+objectClass: organizationalUnit
+ou: services
+
+##############################################################
+# Group objects in ou=groups
+##############################################################
+
+dn: cn=LDAP_ReadWrite,ou=groups,<%= node['ldap']['domain'] %>
+objectClass: groupOfNames
+cn: LDAP_ReadWrite
+member: cn=admin,<%= node['ldap']['domain'] %>
+
+dn: cn=LDAP_Read,ou=groups,<%= node['ldap']['domain'] %>
+objectClass: groupOfNames
+cn: LDAP_Read
+member: cn=admin,<%= node['ldap']['domain'] %>

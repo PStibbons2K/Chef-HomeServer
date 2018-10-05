@@ -1,0 +1,112 @@
+######################################################
+# Initial Changes to the config tree
+# this changes are required to configure all
+# needed features
+######################################################
+
+######################################################
+# Add admin account for cn=config
+######################################################
+
+# this entry is already there after installation
+#dn: olcDatabase={0}config,cn=config
+#changetype: modify
+#replace: olcRootDN
+#olcRootDN: cn=admin,cn=config
+
+# TODO: Replace with correct SSHA password value
+# Set admin password for the configuration tree
+dn: olcDatabase={0}config,cn=config
+changetype: modify
+replace: olcRootPW
+olcRootPW: {SSHA}b8QhA4caVcAzoa+2IURpS7EFIw0xrPQs
+
+# INFO: test this setting with "slapauth -v -d 4 -M GSSAPI ldap/psrv.icenet.home"
+#dn:cn=config
+#changetype: modify
+#replace: olcAuthzRegexp
+#olcAuthzRegexp:"uid=.*/admin,cn=gss.*,cn=auth" "cn=admin,dc=icenet,dc=home"
+#olcAuthzRegexp:"uid=(.*),cn=gss.*,cn=auth" "ldap:///dc=icenet,dc=home??sub?(krbPrincipalName=$1@ICENET.HOME)"
+
+######################################################
+# Add TLS parameters and force TLS connections
+######################################################
+
+dn: cn=config
+changetype: modify
+replace: olcTLSCACertificateFile
+olcTLSCACertificateFile: /etc/ssl/certs/cert_ca.<%= node['main']['domain'] %>.pem
+-
+replace: olcTLSCertificateFile
+olcTLSCertificateFile: /etc/ssl/certs/cert_ldapsrv.<%= node['main']['domain'] %>.pem
+-
+replace: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /etc/ssl/private/key_ldapsrv.<%= node['main']['domain'] %>.pem
+
+# TODO: This disables ldapi:///-Access ?
+#dn: cn=config
+#changetype: modify
+#replace: olcSecurity
+#olcSecurity: tls=1
+
+##########################################################
+# Modify NIS schema - posixGroup should be auxiliary
+# this is at least a part of rfc2307bis
+# TODO: Check replacing the NIS schema with rcf2307bis?
+# seems to be unneccessary?
+##########################################################
+
+dn: cn={2}nis,cn=schema,cn=config
+changetype: modify
+replace: olcObjectClasses
+olcObjectClasses: {0}( 1.3.6.1.1.1.2.0 NAME 'posixAccount' DESC 'Abstraction o
+ f an account with POSIX attributes' SUP top AUXILIARY MUST ( cn $ uid $ uidNu
+ mber $ gidNumber $ homeDirectory ) MAY ( userPassword $ loginShell $ gecos $
+ description ) )
+olcObjectClasses: {1}( 1.3.6.1.1.1.2.1 NAME 'shadowAccount' DESC 'Additional a
+ ttributes for shadow passwords' SUP top AUXILIARY MUST uid MAY ( userPassword
+  $ shadowLastChange $ shadowMin $ shadowMax $ shadowWarning $ shadowInactive
+ $ shadowExpire $ shadowFlag $ description ) )
+olcObjectClasses: {3}( 1.3.6.1.1.1.2.3 NAME 'ipService' DESC 'Abstraction an I
+ nternet Protocol service' SUP top STRUCTURAL MUST ( cn $ ipServicePort $ ipSe
+ rviceProtocol ) MAY description )
+olcObjectClasses: {4}( 1.3.6.1.1.1.2.4 NAME 'ipProtocol' DESC 'Abstraction of
+ an IP protocol' SUP top STRUCTURAL MUST ( cn $ ipProtocolNumber $ description
+  ) MAY description )
+olcObjectClasses: {5}( 1.3.6.1.1.1.2.5 NAME 'oncRpc' DESC 'Abstraction of an O
+ NC/RPC binding' SUP top STRUCTURAL MUST ( cn $ oncRpcNumber $ description ) M
+ AY description )
+olcObjectClasses: {6}( 1.3.6.1.1.1.2.6 NAME 'ipHost' DESC 'Abstraction of a ho
+ st, an IP device' SUP top AUXILIARY MUST ( cn $ ipHostNumber ) MAY ( l $ desc
+ ription $ manager ) )
+olcObjectClasses: {7}( 1.3.6.1.1.1.2.7 NAME 'ipNetwork' DESC 'Abstraction of a
+ n IP network' SUP top STRUCTURAL MUST ( cn $ ipNetworkNumber ) MAY ( ipNetmas
+ kNumber $ l $ description $ manager ) )
+olcObjectClasses: {8}( 1.3.6.1.1.1.2.8 NAME 'nisNetgroup' DESC 'Abstraction of
+  a netgroup' SUP top STRUCTURAL MUST cn MAY ( nisNetgroupTriple $ memberNisNe
+ tgroup $ description ) )
+olcObjectClasses: {9}( 1.3.6.1.1.1.2.9 NAME 'nisMap' DESC 'A generic abstracti
+ on of a NIS map' SUP top STRUCTURAL MUST nisMapName MAY description )
+olcObjectClasses: {10}( 1.3.6.1.1.1.2.10 NAME 'nisObject' DESC 'An entry in a
+ NIS map' SUP top STRUCTURAL MUST ( cn $ nisMapEntry $ nisMapName ) MAY descri
+ ption )
+olcObjectClasses: {11}( 1.3.6.1.1.1.2.11 NAME 'ieee802Device' DESC 'A device w
+ ith a MAC address' SUP top AUXILIARY MAY macAddress )
+olcObjectClasses: {12}( 1.3.6.1.1.1.2.12 NAME 'bootableDevice' DESC 'A device
+ with boot parameters' SUP top AUXILIARY MAY ( bootFile $ bootParameter ) )
+olcObjectClasses: {2}( 1.3.6.1.1.1.2.2 NAME 'posixGroup' DESC 'Abstraction of
+ a group of accounts' SUP top AUXILIARY MUST ( cn $ gidNumber ) MAY ( userPass
+ word $ memberUid $ description ) )
+
+######################################################
+# Set minimal ACLs for default users and groups
+# and allow ldapi access to data tree
+# TODO: is this a good idea?
+######################################################
+
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+replace: olcAccess
+olcAccess: to attrs=userPassword by self write by anonymous auth by * none
+olcAccess: to attrs=shadowLastChange by self write by * read
+olcAccess: to * by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by * read

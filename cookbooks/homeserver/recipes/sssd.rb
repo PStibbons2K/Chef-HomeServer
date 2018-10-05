@@ -1,6 +1,6 @@
 #
 # Cookbook:: homeserver
-# Recipe:: dnsmasq
+# Recipe:: sssd
 #
 # Copyright:: 2018, Martin Zimmermann
 #
@@ -16,30 +16,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# install the dnsmasq package
-package 'dnsmasq'
+package 'sssd'
+package 'sssd-tools'
 
 # create a service and start it
-service "dnsmasq" do
-  action :start
-end
+#service "sssd" do
+#  supports [:start, :restart, :status]
+#  action [:enable, :start]
+#end
 
-# copy the configuration template
-template '/etc/dnsmasq.conf' do
-  source 'dnsmasq/dnsmasq.conf.erb'
+template '/etc/sssd/sssd.conf' do
+  source 'sssd.conf.erb'
+  mode '0600'
   owner 'root'
   group 'root'
-  mode '0640'
-  notifies :restart, "service[dnsmasq]"
-end
-
-# create the static host mapping config
-# TODO: Add a check or guard to prevent template file if no static host is defined
-template '/etc/dnsmasq.d/static-dnsmasq.conf' do
-  source 'dnsmasq/dnsmasq_static.conf.erb'
-  owner 'root'
-  group 'root'
-  mode '0640'
-  variables ( {:static_hosts => node['network']['dhcp']['static_hosts'] } )
-  notifies :restart, "service[dnsmasq]"
+  #notifies :restart, "service[sssd]"
 end

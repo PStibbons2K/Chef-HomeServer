@@ -10,8 +10,7 @@
   "default_attributes": {
     "main": {
       "hostname": "vhomesrv",
-      "domain": "test.intra.zimmermann.family",
-      "krb_domain": "TEST.INTRA.ZIMMERMANN.FAMILY"
+      "domain": "test.intra.zimmermann.family"
     },
     "network": {
       "address": "192.168.99",
@@ -30,6 +29,9 @@
     },
     "ldap": {
       "domain": "dc=test,dc=intra,dc=zimmermann,dc=family"
+    },
+    "kerberos": {
+      "realm": "TEST.INTRA.ZIMMERMANN.FAMILY"
     }
   },
 
