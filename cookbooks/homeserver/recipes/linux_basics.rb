@@ -57,3 +57,10 @@ package 'iotop'
 package 'tcptrack'
 package 'cifs-utils'
 package 'ssl-cert'
+
+# set correct permission for the CA certificate
+file "/etc/ssl/certs/cert_ca.#{node['main']['domain']}.pem" do
+  owner 'root'
+  group 'root'
+  mode '0644'
+end

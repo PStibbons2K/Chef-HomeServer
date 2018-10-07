@@ -54,14 +54,13 @@ end
 
 
 # TODO: Set correct permissions for certificate files
-# TODO: Replace hard coded domain name with variable from environment
-file '/etc/ssl/certs/cert_ldapsrv.test.intra.zimmermann.family.pem' do
+file "/etc/ssl/certs/cert_ldapsrv.#{node['main']['domain']}.pem" do
   owner 'root'
   group 'root'
   mode '0644'
 end
 
-file '/etc/ssl/private/key_ldapsrv.test.intra.zimmermann.family.pem' do
+file "/etc/ssl/private/key_ldapsrv.#{node['main']['domain']}.pem" do
   owner 'root'
   group 'ssl-cert'
   mode '0640'

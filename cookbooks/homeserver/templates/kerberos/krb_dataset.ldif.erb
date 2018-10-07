@@ -1,0 +1,32 @@
+##############################################################
+# Services - MIT KERBEROS
+##############################################################
+
+
+# TODO: Replace password entries with hashed passwords from config
+
+dn: cn=kerberos,ou=services,<%= node['ldap']['domain'] %>
+objectClass: krbContainer
+cn: mit-kerberos
+
+dn: cn=kdc,cn=kerberos,ou=services,<%= node['ldap']['domain'] %>
+objectClass: organizationalRole
+objectClass: simpleSecurityObject
+cn: kdc
+userPassword: {SSHA}b8QhA4caVcAzoa+2IURpS7EFIw0xrPQs
+
+dn: cn=kadmind,cn=kerberos,ou=services,<%= node['ldap']['domain'] %>
+objectClass: organizationalRole
+objectClass: simpleSecurityObject
+cn: kadmind
+userPassword: {SSHA}b8QhA4caVcAzoa+2IURpS7EFIw0xrPQs
+
+dn: cn=LDAP_ReadWrite,ou=groups,<%= node['ldap']['domain'] %>
+changetype: modify
+add: member
+member: cn=kdc,cn=kerberos,ou=services,<%= node['ldap']['domain'] %>
+
+dn: cn=LDAP_ReadWrite,ou=groups,<%= node['ldap']['domain'] %>
+changetype: modify
+add: member
+member: cn=kadmind,cn=kerberos,ou=services,<%= node['ldap']['domain'] %>

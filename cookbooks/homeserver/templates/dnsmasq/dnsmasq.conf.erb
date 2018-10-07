@@ -16,7 +16,7 @@ listen-address=127.0.0.1
 listen-address=<%= node['network']['server_ip'] %>
 
 # additional dns server - should be a free one, not the router?
-#server=${ROUTER_ADDR}
+server=<%= node['network']['address'] %>.1
 
 # Part 2: DHCP settings
 

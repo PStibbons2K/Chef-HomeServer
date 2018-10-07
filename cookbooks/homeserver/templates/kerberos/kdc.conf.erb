@@ -14,8 +14,8 @@
   openldap_ldapconf = {
     db_library = kldap
     ldap_kerberos_container_dn = "cn=kerberos,ou=services,<%= node['ldap']['domain'] %>"
-    ldap_kdc_dn = "cn=mit-kdc,cn=kerberos,ou=services,<%= node['ldap']['domain'] %>"
-    ldap_kadmind_dn = "cn=mit-kadmind,cn=kerberos,ou=services,<%= node['ldap']['domain'] %>"
+    ldap_kdc_dn = "cn=kdc,cn=kerberos,ou=services,<%= node['ldap']['domain'] %>"
+    ldap_kadmind_dn = "cn=kadmind,cn=kerberos,ou=services,<%= node['ldap']['domain'] %>"
     ldap_service_password_file = "/etc/krb5kdc/service.keyfile"
     ldap_servers = "ldap://ldapsrv.<%= node['main']['domain'] %>"
     ldap_conns_per_server = 5

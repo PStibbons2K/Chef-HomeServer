@@ -47,3 +47,17 @@ dn: cn=LDAP_Read,ou=groups,<%= node['ldap']['domain'] %>
 objectClass: groupOfNames
 cn: LDAP_Read
 member: cn=admin,<%= node['ldap']['domain'] %>
+
+
+##############################################################
+# Replace ACLs with a set containing the new
+# LDAP Read / Write groups
+##############################################################
+
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+replace: olcAccess
+olcAccess: to attrs=userPassword,shadowLastChange by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by group="cn=LDAP_ReadWrite,ou=groups,<%= node['ldap']['domain'] %>" write by group="cn=LDAP_Read,ou=groups,<%= node['ldap']['domain'] %>" read by self write by anonymous auth
+olcAccess: to attrs=cn,dc,gecos,gidNumber,homeDirectory,loginShell,member,memberUid,objectClass,ou,sn,uid,uidNumber,uniqueMember,entry by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by group="cn=LDAP_ReadWrite,ou=groups,<%= node['ldap']['domain'] %>" write by group="cn=LDAP_Read,ou=groups,<%= node['ldap']['domain'] %>" read by users read by anonymous auth by * none
+olcAccess: to dn.base="" by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by group="cn=LDAP_ReadWrite,ou=groups,<%= node['ldap']['domain'] %>" write by * read
+olcAccess: to * by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" write by group="cn=LDAP_ReadWrite,ou=groups,<%= node['ldap']['domain'] %>" write by * read
