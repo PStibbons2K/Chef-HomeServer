@@ -43,7 +43,7 @@ include_recipe 'homeserver::ldapsrv'
 include_recipe 'homeserver::kerberos'
 
 # Step 06 - SSSD as login frontend
-#include_recipe 'homeserver::sssd'
+include_recipe 'homeserver::sssd'
 
 # Step 07 - Samba server
 #include_recipe 'homeserver::sambasrv'

@@ -30,3 +30,8 @@ dn: cn=LDAP_ReadWrite,ou=groups,<%= node['ldap']['domain'] %>
 changetype: modify
 add: member
 member: cn=kadmind,cn=kerberos,ou=services,<%= node['ldap']['domain'] %>
+
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+add: olcDbIndex
+olcDbIndex: krbPrincipalName eq

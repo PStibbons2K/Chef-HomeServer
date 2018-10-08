@@ -107,7 +107,26 @@ end
 # SLAPD_SERVICES="ldap:/// ldapi:///"
 # in /etc/default/slapd
 
+# enable ldaps
+template '/etc/default/slapd' do
+  source 'ldap/slapd_defaults.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :restart, 'service[slapd]', :immediately
+end
+
+
 # TODO: create monitoring snippets
+
+# create backup script
+#echo "--> Creating backup directory"
+#mkdir -p /datastore/backup/${SERVER_NAME}/ldap
+
+#echo "--> Copy cronjob file to cron.daily"
+#envsubst <${DATA_DIR}/backup_slapd.sh >/etc/cron.daily/backup_slapd
+#chmod 0750 /etc/cron.daily/backup_slapd.sh
+#chown root:root /etc/cron.daily/backup_slapd.sh
 
 ################################################
 # executes for several templates and ldif files

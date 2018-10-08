@@ -19,16 +19,17 @@
 package 'sssd'
 package 'sssd-tools'
 
-# create a service and start it
-#service "sssd" do
-#  supports [:start, :restart, :status]
-#  action [:enable, :start]
-#end
-
 template '/etc/sssd/sssd.conf' do
-  source 'sssd.conf.erb'
+  source 'sssd/sssd.conf.erb'
   mode '0600'
   owner 'root'
   group 'root'
-  #notifies :restart, "service[sssd]"
+  notifies :restart, "service[sssd]"
 end
+
+# create a service and start it
+service "sssd" do
+  supports [:start, :restart, :status]
+  action [:enable, :start]
+end
+

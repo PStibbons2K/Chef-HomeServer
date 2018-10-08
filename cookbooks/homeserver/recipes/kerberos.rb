@@ -87,7 +87,7 @@ end
 # TODO: Replace the password entries
 execute 'create_krb5_domain' do
   command "echo 'P@ssw0rd\nP@ssw0rd\n' |kdb5_ldap_util create -D cn=admin,#{node['ldap']['domain']} -w P@ssw0rd -r #{node['kerberos']['realm']} -s -sscope sub -subtrees ou=users,#{node['ldap']['domain']}"
-  sensitive true
+  #sensitive true
   not_if "kdb5_ldap_util view -r #{node['kerberos']['realm']}"
 end
 
@@ -127,23 +127,48 @@ execute 'stash_kadmind_pwd' do
 end
 
 execute 'create_ldap_principal' do
+  # TODO: Add a guard
   command "kadmin.local -q \"addprinc -randkey ldap/ldapsrv.#{node['ldap']['domain']}@#{node['kerberos']['realm']}\""
 end
 
 execute 'create_host_principal' do
-  command "kadmin.local -q \"addprinc -randkey host/#{node['main']['hostname"']}.#{node['ldap']['domain']}@#{node['kerberos']['realm']}\""
+  # TODO: Add a guard
+  command "kadmin.local -q \"addprinc -randkey host/#{node['main']['hostname']}.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
+end
+
+execute 'create_ldap_keytab' do
+  # TODO: Add a guard - file existence maybe?
+  command "kadmin.local -q \"ktadd -k /etc/ldap/krb5.keytab ldap/ldapsrv.#{node['ldap']['domain']}@#{node['kerberos']['realm']}\""
+end
+
+file '/etc/ldap/krb5.keytab' do
+  owner 'openldap'
+  group 'openldap'
+  mode '0600'
+end
+
+# enable kerberos
+template '/etc/default/slapd' do
+  source 'ldap/slapd_defaults.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :restart, 'service[slapd]', :immediately
+end
+
+execute 'create_host_keytab' do
+  command "kadmin.local -q \"ktadd -k /etc/krb5.keytab host/#{node['main']['hostname']}.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
+end
+
+file '/etc/krb5.keytab' do
+  owner 'root'
+  group 'root'
+  mode '0600'
 end
 
 #<--- OLD bash scripts for reference --->
 
 
-# Set LDAP permissions to allow write access to krb userkeys
-
-# Create LDAP and host principal for server and save to keytab
-
-#echo "--> Adding krb principal for ldap and host on server ${SERVER_NAME}"
-#kadmin.local -q "addprinc -randkey ldap/ldapsrv.test.intra.zimmermann.family@TEST.INTRA.ZIMMERMANN.FAMILY"
-#kadmin.local -q "addprinc -randkey host/homesrv.test.intra.zimmermann.family@TEST.INTRA.ZIMMERMANN.FAMILY"
 
 #echo "--> Saving LDAP principal in keytab file"
 #kadmin.local -q "ktadd -k /etc/ldap/krb5.keytab ldap/${SERVER_NAME}.${DNS_REALMNAME}@${KRB5_REALMNAME}"

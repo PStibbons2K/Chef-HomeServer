@@ -43,7 +43,8 @@ olcTLSCertificateFile: /etc/ssl/certs/cert_ldapsrv.<%= node['main']['domain'] %>
 replace: olcTLSCertificateKeyFile
 olcTLSCertificateKeyFile: /etc/ssl/private/key_ldapsrv.<%= node['main']['domain'] %>.pem
 
-# TODO: This disables ldapi:///-Access ?
+# TODO: This forces tls for ldapi:///-Access - not working properly atm
+# reason is cert is for ldapsrv, but hostname is different
 #dn: cn=config
 #changetype: modify
 #replace: olcSecurity
