@@ -32,6 +32,22 @@ end
 # this currently triggers a restart even if the module is already loaded - should be changed!
 # better: Check if /mods-enabled already contains a symlink to [module].load?
 execute "a2enmod ssl" do
-  command "/usr/sbin/a2enmod #{params[:name]}"
-  notifies :restart, 'service[apache2]', :delayed
+  command "/usr/sbin/a2enmod ssl"
+  notifies :restart, 'service[apache2]', :immediately
+  # TODO: Switch to a2query instead of file existence!
+  not_if { ::File.exist?('/etc/apache2/mods-enabled/ssl.load') }
 end
+
+#execute "a2ensite ssl" do
+#  command "/usr/sbin/a2ensite ssl"
+#  notifies :restart, 'service[apache2]', :immediately
+#  not_if { ::File.exist?('/etc/apache2/sites-enabled/ssl.load') }
+#end
+
+package 'php'
+
+# set timezone for php in php.ini!
+#[Date]
+#; Defines the default timezone used by the date functions
+#; http://php.net/date.timezone
+#;date.timezone =

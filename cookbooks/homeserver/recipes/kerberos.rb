@@ -128,7 +128,7 @@ end
 
 execute 'create_ldap_principal' do
   # TODO: Add a guard
-  command "kadmin.local -q \"addprinc -randkey ldap/ldapsrv.#{node['ldap']['domain']}@#{node['kerberos']['realm']}\""
+  command "kadmin.local -q \"addprinc -randkey ldap/ldapsrv.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
 end
 
 execute 'create_host_principal' do
@@ -137,8 +137,9 @@ execute 'create_host_principal' do
 end
 
 execute 'create_ldap_keytab' do
-  # TODO: Add a guard - file existence maybe?
-  command "kadmin.local -q \"ktadd -k /etc/ldap/krb5.keytab ldap/ldapsrv.#{node['ldap']['domain']}@#{node['kerberos']['realm']}\""
+  command "kadmin.local -q \"ktadd -k /etc/ldap/krb5.keytab ldap/ldapsrv.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
+  # TODO: Add a better guard, maybe a grep?
+  not_if { ::File.exist?('/etc/ldap/krb5.keytab') }
 end
 
 file '/etc/ldap/krb5.keytab' do
@@ -158,6 +159,8 @@ end
 
 execute 'create_host_keytab' do
   command "kadmin.local -q \"ktadd -k /etc/krb5.keytab host/#{node['main']['hostname']}.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
+  # TODO: Add a better guard, maybe a grep?
+  not_if { ::File.exist?('/etc/krb5.keytab') }
 end
 
 file '/etc/krb5.keytab' do
@@ -165,24 +168,3 @@ file '/etc/krb5.keytab' do
   group 'root'
   mode '0600'
 end
-
-#<--- OLD bash scripts for reference --->
-
-
-
-#echo "--> Saving LDAP principal in keytab file"
-#kadmin.local -q "ktadd -k /etc/ldap/krb5.keytab ldap/${SERVER_NAME}.${DNS_REALMNAME}@${KRB5_REALMNAME}"
-#chown openldap:openldap /etc/ldap/krb5.keytab#
-
-#echo "--> Saving host principal in keytab file"
-#kadmin.local -q "ktadd -k /etc/krb5.keytab host/${SERVER_NAME}.${DNS_REALMNAME}@${KRB5_REALMNAME}"
-
-# Set keytab name for GSSAPI
-#echo "--> Setting keytab name for slapd"
-#sed -ie 's|^.*KRB5_KTNAME.*$|export KRB5_KTNAME=/etc/ldap/krb5.keytab|' /etc/default/slapd
-
-#echo "--> Starting kdc service"
-#/etc/init.d/krb5-kdc start
-
-#echo "--> Restarting slapd service to enable kerberos integration"
-#systemctl restart slapd

@@ -1,0 +1,38 @@
+diff -Naur a/usr/sbin/sensors-detect b/usr/sbin/sensors-detect
+--- a/usr/sbin/sensors-detect	2015-05-31 14:00:33.622286000 +0200
++++ b/usr/sbin/sensors-detect	2015-12-15 13:26:56.423072533 +0100
+@@ -1269,7 +1269,12 @@
+ 		driver => "fschmd",
+ 		i2c_addrs => [0x73],
+ 		i2c_detect => sub { fsc_detect(@_, 7); },
+-	}, {
++	}, { 
++        name => "FSC Teutates",
++        driver => "ftsteutates",
++        i2c_addrs => [0x73],
++        i2c_detect => sub { fts_detect(@_, 1); },
++    }, {
+ 		name => "ALi M5879",
+ 		driver => "to-be-written",
+ 		i2c_addrs => [0x2c..0x2d],
+@@ -6076,6 +6081,20 @@
+ 	return 8;
+ }
+ 
++# ChipID to detect: 1 = Teutates
++# Registers used:
++#   0x00: Identification (0x1X => X needs to be ID)
++sub fts_detect
++{
++    my ($file, $addr, $chip) = @_;
++    my $id;
++
++    $id = chr(i2c_smbus_read_byte_data($file, 0x00));
++
++    return if $id == 0x11; # Teutates
++    return 2;
++}
++
+ # Chip to detect: 0 = LM93, 1 = LM94
+ # Registers used:
+ #   0x3E: Manufacturer ID

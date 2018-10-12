@@ -49,8 +49,13 @@ include_recipe 'homeserver::sssd'
 #include_recipe 'homeserver::sambasrv'
 
 # Step 08 - MariaDB server
-#include_recipe 'homeserver::mariadb'
+include_recipe 'homeserver::mariadb'
 
-#include_recipe 'homeserver::websrv'
+# Step 09 - WebServer
+include_recipe 'homeserver::websrv'
 
-#include_recipe 'homeserver::monitoring'
+# Step 10 - Icinga2 installation
+include_recipe 'homeserver::monitoring'
+
+# Step 11 - MediaServer
+include_recipe 'homeserver::mediasrv'

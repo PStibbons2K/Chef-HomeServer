@@ -43,6 +43,7 @@ end
 
 # package installation
 package 'lm-sensors'
+package 'patch'
 
 # TODO: Check if there are any firmware modules to build
 # for the FTS Teutates module on 3417-B? Still needed? Old instructions below:
@@ -54,8 +55,18 @@ package 'lm-sensors'
 # - modify /etc/modules
 # TODO: New - possibly the config file for lmsensors is enough?
 
-# TODO: check if sensors-detect can be run here?
+#patch /usr/sbin/sensors-detect /home/ladmin/assets/add-fts-teutates-to-lm-sensors-detect.patch
+#https://hirnfasching.de/2016/08/02/monitoring-eines-fujitsu-d3417-b1-unter-debian-jessie/
+#----cut here----
+ # Chip drivers
+ #coretemp
+ #ftsteutates
+ #jc42
+
+# TODO: check if sensors-detect can be run here? - if not, run manually
 
 ##################################################
-# other hardware modules - e.g. missing firmware
+# other hardware modules - e.g. missing firmware?
 ##################################################
+
+package 'firmware-misc-nonfree'

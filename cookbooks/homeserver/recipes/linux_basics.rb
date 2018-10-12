@@ -17,8 +17,14 @@
 # limitations under the License.
 
 # This recipe installs the basic packages needed for the home server
+# and makes sure everything is set up correctly
 
-# should we set the hostname via "hostname" resource here?
+# check that the hostname is correct?
+# TODO: Not working, this removes the domain name from /etc/hosts
+#hostname 'homeserver' do
+#  hostname            "#{node['main']['hostname']}"
+#  ipaddress           "#{node['network']['server_ip']}"
+#end
 
 # add contrib and non-free repositories
 apt_repository 'debian-main' do
@@ -57,6 +63,7 @@ package 'iotop'
 package 'tcptrack'
 package 'cifs-utils'
 package 'ssl-cert'
+package 'smartmontools'
 
 # set correct permission for the CA certificate
 file "/etc/ssl/certs/cert_ca.#{node['main']['domain']}.pem" do

@@ -15,3 +15,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# install required packages
+package 'dovecot-imapd'
+package 'postfix'
+
+# set up dovecot mailserver
+
+# set up postfix MTA
+
+
+# set up mail fetching from external servers
+# TODO: is there a better package than fetchmail?
+# package 'fetchmail'

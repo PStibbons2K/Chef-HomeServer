@@ -13,4 +13,4 @@ URI    ldap://ldapsrv.<%= node['main']['domain'] %>
 #DEREF          never
 
 # TLS certificates (needed for GnuTLS)
-TLS_CACERT      /etc/ssl/certs/ca-certificates.crt
+TLS_CACERT      /etc/ssl/certs/cert_ca.<%= node['main']['domain'] %>

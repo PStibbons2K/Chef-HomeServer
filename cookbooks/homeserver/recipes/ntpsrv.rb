@@ -21,7 +21,8 @@ package 'ntp'
 
 # create a service and start it
 service "ntp" do
-  action :start
+  supports [:start, :restart, :status]
+  action [:enable, :start]
 end
 
 # create dnsmasq config snippet for ntpd.<net-name> alias name
