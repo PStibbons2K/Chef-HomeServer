@@ -19,18 +19,17 @@
 # install the dnsmasq package
 package 'dnsmasq'
 
-# create a service and start it
-service "dnsmasq" do
-  action :start
-end
 
-# copy the configuration template
-template '/etc/dnsmasq.conf' do
-  source 'dnsmasq/dnsmasq.conf.erb'
+
+
+# Set the dns server in resolv.conf to the server ip as
+# soon as the service is up
+template '/etc/resolv.conf' do
+  source 'dnsmasq/resolv.conf.erb'
   owner 'root'
   group 'root'
-  mode '0640'
-  notifies :restart, "service[dnsmasq]"
+  mode '0644'
+  notifies :restart, "service[dnsmasq]", :immediately
 end
 
 # create the static host mapping config
@@ -41,5 +40,20 @@ template '/etc/dnsmasq.d/static-dnsmasq.conf' do
   group 'root'
   mode '0640'
   variables ( {:static_hosts => node['network']['dhcp']['static_hosts'] } )
-  notifies :restart, "service[dnsmasq]"
+  notifies :restart, "service[dnsmasq]", :immediately
+end
+
+# copy the configuration template
+template '/etc/dnsmasq.conf' do
+  source 'dnsmasq/dnsmasq.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0640'
+  notifies :restart, "service[dnsmasq]", :immediately
+end
+
+
+# create a service and start it
+service "dnsmasq" do
+  action :start
 end

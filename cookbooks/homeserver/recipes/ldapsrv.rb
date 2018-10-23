@@ -49,7 +49,7 @@ template '/etc/dnsmasq.d/ldapsrv-dnsmasq.conf' do
   owner 'root'
   group 'root'
   mode '0640'
-  notifies :restart, "service[dnsmasq]"
+  notifies :restart, "service[dnsmasq]", :immediately
 end
 
 

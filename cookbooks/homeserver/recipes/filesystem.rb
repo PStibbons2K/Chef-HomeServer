@@ -16,6 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# ZFS needs build stuff and dkms for kernel modules
+package 'dkms'
+
 # install zfs on linux package
 package 'zfsutils-linux' do
   action :install
@@ -33,15 +36,15 @@ end
 # - 4k-Block-Switch
 # - raid type (default should be raidz1?)
 
+#execute 'create_zpool' do
+#  command "zpool"
+#  not_if
+#end
 
 # create L2ARC cache if configured (variable?)
 # see https://pthree.org/2012/12/07/zfs-administration-part-iv-the-adjustable-replacement-cache/
 
-
-# zfs-dkms needs a "yes"?
+# Install snapshot package after initial setup for the zfs pool
 # zfs-auto-snapshot is also creating cronjobs for snapshots!
 # should the "keep"-amount be configurable? if yes - add templates?
-
-
-# Install snapshot package after initial setup for the zfs pool
 #package 'zfs-auto-snapshot'

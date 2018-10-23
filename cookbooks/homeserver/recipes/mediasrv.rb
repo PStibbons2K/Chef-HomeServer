@@ -20,3 +20,25 @@
 package 'minidlna'
 
 # set up dns alias
+template '/etc/dnsmasq.d/mediasrv-dnsmasq.conf' do
+  source 'mediasrv/mediasrv-dnsmasq.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0640'
+  notifies :restart, "service[dnsmasq]", :immediately
+end
+
+# create a service
+service "minidlna" do
+  supports [:start, :restart, :status]
+  action [:enable, :start]
+end
+
+# replace config file and restart the service
+template '/etc/minidlna.conf' do
+  source 'mediasrv/minidlna.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :restart, "service[minidlna]", :immediately
+end

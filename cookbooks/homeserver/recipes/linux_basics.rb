@@ -58,6 +58,7 @@ end
 package 'debconf-utils'
 package 'unzip'
 package 'build-essential'
+package 'linux-headers-amd64'
 package 'powertop'
 package 'iotop'
 package 'tcptrack'

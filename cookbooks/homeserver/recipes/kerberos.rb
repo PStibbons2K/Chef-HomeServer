@@ -83,7 +83,7 @@ execute 'ldapadd_data' do
 end
 
 # Create kerberos domain
-# do it only if "kdb5_ldap_util view -r TEST.INTRA.ZIMMERMANN.FAMILY" returns != 0 - otherwise the domain is already there
+# do it only if "kdb5_ldap_util view -r <DOMAIN>" returns != 0 - otherwise the domain is already there
 # TODO: Replace the password entries
 execute 'create_krb5_domain' do
   command "echo 'P@ssw0rd\nP@ssw0rd\n' |kdb5_ldap_util create -D cn=admin,#{node['ldap']['domain']} -w P@ssw0rd -r #{node['kerberos']['realm']} -s -sscope sub -subtrees ou=users,#{node['ldap']['domain']}"
@@ -94,28 +94,12 @@ end
 # sample for piping data into script:
 # command "echo '#{node['krb5']['master_password']}\n#{node['krb5']['master_password']}\n' | kdb5_util -r #{default_realm} create -s"
 
-service 'krb5-admin-server' do
-  supports [:start, :restart, :status]
-  action [:enable, :start]
-  subscribes :reload, 'file[/etc/krb5.conf]', :immediately
-  subscribes :reload, 'file[/etc/krb5kdc/kdc.conf]', :immediately
-  subscribes :reload, 'file[/etc/krb5kdc/kadm5.acl]', :immediately
-end
-
-service 'krb5-kdc' do
-  supports [:start, :restart, :status]
-  action [:enable, :start]
-  subscribes :reload, 'file[/etc/krb5.conf]', :immediately
-  subscribes :reload, 'file[/etc/krb5kdc/kdc.conf]', :immediately
-  subscribes :reload, 'file[/etc/krb5kdc/kadm5.acl]', :immediately
-end
-
 # Stash password for kdc user
 # should this really be executed each time? What about password changes? A simple
 # not_if / grep combination would not work?
 execute 'stash_kdc_pwd' do
   command "echo 'P@ssw0rd\nP@ssw0rd\nP@ssw0rd\n' |kdb5_ldap_util stashsrvpw -D cn=admin,#{node['ldap']['domain']} -f /etc/krb5kdc/service.keyfile cn=kdc,cn=kerberos,ou=services,#{node['ldap']['domain']}"
-  sensitive true
+  #sensitive true
 end
 
 # Stash password for kadmind user
@@ -123,8 +107,10 @@ end
 # not_if / grep combination would not work?
 execute 'stash_kadmind_pwd' do
   command "echo 'P@ssw0rd\nP@ssw0rd\nP@ssw0rd\n' |kdb5_ldap_util stashsrvpw -D cn=admin,#{node['ldap']['domain']} -f /etc/krb5kdc/service.keyfile cn=kadmind,cn=kerberos,ou=services,#{node['ldap']['domain']}"
-  sensitive true
+  #sensitive true
 end
+
+# TODO: Possible solution - create stash file somewhere else and compare content before replacing the old file?
 
 execute 'create_ldap_principal' do
   # TODO: Add a guard
@@ -167,4 +153,20 @@ file '/etc/krb5.keytab' do
   owner 'root'
   group 'root'
   mode '0600'
+end
+
+service 'krb5-admin-server' do
+  supports [:start, :restart, :status]
+  action [:enable, :start]
+  subscribes :reload, 'file[/etc/krb5.conf]', :immediately
+  subscribes :reload, 'file[/etc/krb5kdc/kdc.conf]', :immediately
+  subscribes :reload, 'file[/etc/krb5kdc/kadm5.acl]', :immediately
+end
+
+service 'krb5-kdc' do
+  supports [:start, :restart, :status]
+  action [:enable, :start]
+  subscribes :reload, 'file[/etc/krb5.conf]', :immediately
+  subscribes :reload, 'file[/etc/krb5kdc/kdc.conf]', :immediately
+  subscribes :reload, 'file[/etc/krb5kdc/kadm5.acl]', :immediately
 end

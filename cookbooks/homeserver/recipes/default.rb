@@ -25,7 +25,7 @@
 include_recipe 'homeserver::linux_basics'
 
 # Step 01b - Hardware dependent packages
-include_recipe 'homeserver::hardware'
+#include_recipe 'homeserver::hardware'
 
 # Step 02 - ZFS filesystem
 include_recipe 'homeserver::filesystem'
@@ -46,7 +46,7 @@ include_recipe 'homeserver::kerberos'
 include_recipe 'homeserver::sssd'
 
 # Step 07 - Samba server
-#include_recipe 'homeserver::sambasrv'
+include_recipe 'homeserver::sambasrv'
 
 # Step 08 - MariaDB server
 include_recipe 'homeserver::mariadb'

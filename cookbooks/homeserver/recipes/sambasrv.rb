@@ -17,6 +17,28 @@
 # limitations under the License.
 
 
+# install required packages
+package 'samba'
+package 'smbldap-tools'
+package 'smbclient'
+package 'winbind'
+
+# create kerberos principal
+execute 'create_samba_principal' do
+  # TODO: Add a guard
+  command "kadmin.local -q \"addprinc -randkey cifs/#{node['main']['hostname']}.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
+end
+
+# create samba keytab
+execute 'create_samba_keytab' do
+  # TODO: replace rc4-hmac with something newer?
+  command "kadmin.local -q \"ktadd -k /var/lib/samba/private/krb5.keytab -e rc4-hmac:normal cifs/#{node['main']['hostname']}.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
+  not_if { ::File.exist?('/var/lib/samba/private/krb5.keytab') }
+end
+
+# set permissions for the keytab file
+#file
+
 
 # run samba as simple file server or as active directory server?
 # dc provision would be:
