@@ -17,7 +17,11 @@
 # limitations under the License.
 
 # install zfs on linux package
-package 'zfsutils-linux'
+package 'zfsutils-linux' do
+  action :install
+  options "--assume-yes"
+end
+
 
 
 # zfs-dkms needs a "yes"?
