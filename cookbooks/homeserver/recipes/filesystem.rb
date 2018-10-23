@@ -22,6 +22,20 @@ package 'zfsutils-linux' do
   options "--assume-yes"
 end
 
+# create zpool if not yet there
+# guard could be zpool list -Ho name <name>
+# ladm@homesrv:~$ sudo zpool list -Ho name blobb
+#cannot open 'blobb': no such pool
+#ladm@homesrv:~$ echo $?
+#return value for non-existant pool is "1"
+#zpool params:
+# - disk ids
+# - 4k-Block-Switch
+# - raid type (default should be raidz1?)
+
+
+# create L2ARC cache if configured (variable?)
+# see https://pthree.org/2012/12/07/zfs-administration-part-iv-the-adjustable-replacement-cache/
 
 
 # zfs-dkms needs a "yes"?
