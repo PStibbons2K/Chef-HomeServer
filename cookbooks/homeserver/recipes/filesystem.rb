@@ -17,13 +17,30 @@
 # limitations under the License.
 
 # install zfs on linux package
+# zfs-dkms needs a "yes"?
 package 'zfsutils-linux'
 
 
-# zfs-dkms needs a "yes"?
+# create zpool if not yet there
+# guard could be zpool list -Ho name <name>
+# ladm@homesrv:~$ sudo zpool list -Ho name blobb
+#cannot open 'blobb': no such pool
+#ladm@homesrv:~$ echo $?
+#return value for non-existant pool is "1"
+#zpool params:
+# - disk ids
+# - 4k-Block-Switch
+# - raid type (default should be raidz1?)
+
+
+# create L2ARC cache if configured (variable?)
+# see https://pthree.org/2012/12/07/zfs-administration-part-iv-the-adjustable-replacement-cache/
+
+
 # zfs-auto-snapshot is also creating cronjobs for snapshots!
 # should the "keep"-amount be configurable? if yes - add templates?
 
+# create cronjob to regularly scrub the data pool
 
 # Install snapshot package after initial setup for the zfs pool
 #package 'zfs-auto-snapshot'
