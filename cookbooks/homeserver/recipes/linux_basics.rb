@@ -54,8 +54,9 @@ apt_update 'daily' do
   action :periodic
 end
 
-# install basic packages
+# install basic packages and several utilities
 package 'debconf-utils'
+package 'debconf-doc'
 package 'unzip'
 package 'build-essential'
 package 'linux-headers-amd64'
@@ -66,9 +67,12 @@ package 'cifs-utils'
 package 'ssl-cert'
 package 'smartmontools'
 
+# TODO: Get the ca certificate from somewhere trustworthy - currently it has to be placed before the first chef run!
+
 # set correct permission for the CA certificate
 file "/etc/ssl/certs/cert_ca.#{node['main']['domain']}.pem" do
   owner 'root'
   group 'root'
   mode '0644'
 end
+

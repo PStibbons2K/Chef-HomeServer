@@ -66,7 +66,7 @@ package 'patch'
 # TODO: check if sensors-detect can be run here? - if not, run manually
 
 ##################################################
-# other hardware modules - e.g. missing firmware?
+# other hardware modules - e.g. missing firmware
 ##################################################
 
 package 'firmware-misc-nonfree'

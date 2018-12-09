@@ -32,6 +32,30 @@
     },
     "kerberos": {
       "realm": "TEST.INTRA.ZIMMERMANN.FAMILY"
+    },
+    "users": {
+      "testuser1": {
+        "cn": "testuser1",
+        "sn": "User1",
+        "givenname": "Test",
+        "uid": "testuser1",
+        "uidNumber": 10001,
+        "gidNumber": 10001,
+        "gecos": "Testuser 1",
+        "homeDirectory": "/datastore/homes/testuser1",
+        "loginShell": "/bin/bash"
+      },
+      "testuser2": {
+        "cn": "testuser2",
+        "sn": "User2",
+        "givenname": "Test",
+        "uid": "testuser2",
+        "uidNumber": 10002,
+        "gidNumber": 10002,
+        "gecos": "Testuser 2",
+        "homeDirectory": "/datastore/homes/testuser2",
+        "loginShell": "/bin/bash"
+      }
     }
   },
 

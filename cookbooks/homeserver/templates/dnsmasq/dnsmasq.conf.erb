@@ -12,7 +12,6 @@ bogus-priv
 domain=<%= node['main']['domain'] %>
 
 # Listen addresses - localhost and local network
-listen-address=127.0.0.1
 listen-address=<%= node['network']['server_ip'] %>
 
 # additional dns server - should be a free one, not the router?
@@ -21,8 +20,7 @@ server=<%= node['network']['address'] %>.1
 # Part 2: DHCP settings
 
 dhcp-range=<%= node['network']['dhcp']['range_start'] %>,<%= node['network']['dhcp']['range_end'] %>,<%= node['network']['dhcp']['lease_duration'] %>
-
-dhcp-option=option:router,192.168.99.1
+dhcp-option=option:router,<%= node['network']['address'] %>.1
 dhcp-option=option:ntp-server,<%= node['network']['server_ip'] %>
 
 # Configuration file for dnsmasq.

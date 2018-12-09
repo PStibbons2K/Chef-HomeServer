@@ -1,6 +1,6 @@
 #
 # Cookbook:: homeserver
-# Recipe:: nextcloud
+# Recipe:: users
 #
 # Copyright:: 2018, Martin Zimmermann
 #
@@ -16,15 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-# Get the installation package for the required version
-# URL example: https://download.nextcloud.com/server/releases/nextcloud-14.0.3.zip
-
-#TODO: Change version to a variable
-#remote_file '/datastore/software/Applikationen/NextCloud/nextcloud-14.0.3.zip' do
-#  source 'https://download.nextcloud.com/server/releases/nextcloud-14.0.3.zip'
-#  owner 'www-data'
-#  group 'www-data'
-#  mode '0755'
-#  action :create
-#end
+# Steps when creating a user:
+# - create home directory with correct permissions
+# - create kerberos principal with password
+# - create ldap entry
+# - create samba entry with password?

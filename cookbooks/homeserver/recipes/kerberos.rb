@@ -83,7 +83,7 @@ execute 'ldapadd_data' do
 end
 
 # Create kerberos domain
-# do it only if "kdb5_ldap_util view -r <DOMAIN>" returns != 0 - otherwise the domain is already there
+# do it only if "kdb5_ldap_util view -r <DOMAIN>" returns != 0 - otherwise the domain is already there - Does not work! Circle with next steps
 # TODO: Replace the password entries
 execute 'create_krb5_domain' do
   command "echo 'P@ssw0rd\nP@ssw0rd\n' |kdb5_ldap_util create -D cn=admin,#{node['ldap']['domain']} -w P@ssw0rd -r #{node['kerberos']['realm']} -s -sscope sub -subtrees ou=users,#{node['ldap']['domain']}"
@@ -100,6 +100,7 @@ end
 execute 'stash_kdc_pwd' do
   command "echo 'P@ssw0rd\nP@ssw0rd\nP@ssw0rd\n' |kdb5_ldap_util stashsrvpw -D cn=admin,#{node['ldap']['domain']} -f /etc/krb5kdc/service.keyfile cn=kdc,cn=kerberos,ou=services,#{node['ldap']['domain']}"
   #sensitive true
+  not_if "grep cn=kdc,cn=kerberos,ou=services,#{node['ldap']['domain']} /etc/krb5kdc/service.keyfile"
 end
 
 # Stash password for kadmind user
@@ -108,22 +109,25 @@ end
 execute 'stash_kadmind_pwd' do
   command "echo 'P@ssw0rd\nP@ssw0rd\nP@ssw0rd\n' |kdb5_ldap_util stashsrvpw -D cn=admin,#{node['ldap']['domain']} -f /etc/krb5kdc/service.keyfile cn=kadmind,cn=kerberos,ou=services,#{node['ldap']['domain']}"
   #sensitive true
+  not_if "grep cn=kadmind,cn=kerberos,ou=services,#{node['ldap']['domain']} /etc/krb5kdc/service.keyfile"
 end
 
 # TODO: Possible solution - create stash file somewhere else and compare content before replacing the old file?
 
 execute 'create_ldap_principal' do
   # TODO: Add a guard
-  command "kadmin.local -q \"addprinc -randkey ldap/ldapsrv.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
+  command "kadmin.local -q \"addprinc -randkey ldap/#{node['main']['hostname']}.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
+  not_if "kadmin.local -q 'listprincs' | grep ldap/#{node['main']['hostname']}.#{node['main']['domain']}@#{node['kerberos']['realm']}"
 end
 
 execute 'create_host_principal' do
   # TODO: Add a guard
   command "kadmin.local -q \"addprinc -randkey host/#{node['main']['hostname']}.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
+  not_if "kadmin.local -q 'listprincs' | grep host/#{node['main']['hostname']}.#{node['main']['domain']}@#{node['kerberos']['realm']}"
 end
 
 execute 'create_ldap_keytab' do
-  command "kadmin.local -q \"ktadd -k /etc/ldap/krb5.keytab ldap/ldapsrv.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
+  command "kadmin.local -q \"ktadd -k /etc/ldap/krb5.keytab ldap/#{node['main']['hostname']}.#{node['main']['domain']}@#{node['kerberos']['realm']}\""
   # TODO: Add a better guard, maybe a grep?
   not_if { ::File.exist?('/etc/ldap/krb5.keytab') }
 end

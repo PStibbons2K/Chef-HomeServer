@@ -46,7 +46,7 @@ include_recipe 'homeserver::kerberos'
 include_recipe 'homeserver::sssd'
 
 # Step 07 - Samba server
-include_recipe 'homeserver::sambasrv'
+#include_recipe 'homeserver::sambasrv'
 
 # Step 08 - MariaDB server
 include_recipe 'homeserver::mariadb'
@@ -54,8 +54,19 @@ include_recipe 'homeserver::mariadb'
 # Step 09 - WebServer
 include_recipe 'homeserver::websrv'
 
+# Step 10 - Mailserver
+include_recipe 'homeserver::mailsrv'
+
+# Create users from the user list
+#include_recipe 'homeserver::users'
+
+# From here on: several applications
+
 # Step 10 - Icinga2 installation
-include_recipe 'homeserver::monitoring'
+#include_recipe 'homeserver::monitoring'
 
 # Step 11 - MediaServer
-include_recipe 'homeserver::mediasrv'
+#include_recipe 'homeserver::mediasrv'
+
+# Step 12 - NextCloud
+#include_recipe 'homeserver::nextcloud'

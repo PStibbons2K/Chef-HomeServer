@@ -24,7 +24,7 @@ template '/etc/sssd/sssd.conf' do
   mode '0600'
   owner 'root'
   group 'root'
-  notifies :restart, "service[sssd]"
+  notifies :restart, "service[sssd]", :immediately
 end
 
 # create a service and start it

@@ -22,6 +22,7 @@ package 'samba'
 package 'smbldap-tools'
 package 'smbclient'
 package 'winbind'
+package 'msktutil'
 
 # create kerberos principal
 execute 'create_samba_principal' do
@@ -39,6 +40,20 @@ end
 # set permissions for the keytab file
 #file
 
+# create samba config file
+template '/etc/samba/smb.conf' do
+  source 'sambasrv/smb.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  notifies :restart, 'service[smbd]', :immediately
+end
+
+# samba service
+service 'smbd' do
+  supports [:start, :restart, :status]
+  action [:enable, :start]
+end
 
 # run samba as simple file server or as active directory server?
 # dc provision would be:

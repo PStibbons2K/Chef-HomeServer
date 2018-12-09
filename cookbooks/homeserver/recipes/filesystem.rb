@@ -44,6 +44,44 @@ end
 # create L2ARC cache if configured (variable?)
 # see https://pthree.org/2012/12/07/zfs-administration-part-iv-the-adjustable-replacement-cache/
 
+# enable compression for the complete zfs pool
+execute "zfs_enable_compression" do
+  command "zfs set compression=lz4 datastore"
+  not_if "zfs get compression datastore | grep lz4"
+end
+
+# create datasets according to structure
+# TODO: add something more elegant!
+execute "zfs_create_datasets_homes" do
+  command "zfs create datastore/homes"
+  not_if "zfs list datastore/homes"
+end
+
+execute "zfs_create_datasets_media" do
+  command "zfs create datastore/media"
+  not_if "zfs list datastore/media"
+end
+
+execute "zfs_create_datasets_backup" do
+  command "zfs create datastore/backup"
+  not_if "zfs list datastore/backup"
+end
+
+execute "zfs_create_datasets_documents" do
+  command "zfs create datastore/documents"
+  not_if "zfs list datastore/documents"
+end
+
+execute "zfs_create_datasets_server" do
+  command "zfs create datastore/server"
+  not_if "zfs list datastore/server"
+end
+
+execute "zfs_create_datasets_software" do
+  command "zfs create datastore/software"
+  not_if "zfs list datastore/software"
+end
+
 # Install snapshot package after initial setup for the zfs pool
 # zfs-auto-snapshot is also creating cronjobs for snapshots!
 # should the "keep"-amount be configurable? if yes - add templates?

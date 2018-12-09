@@ -30,7 +30,7 @@ package 'mariadb-server'
 
 # create a service and start it
 service "mariadb" do
-  action :start
+  action [:enable, :start]
 end
 
 # create dnsmasq config snippet for dbsrv.<net-name> alias name
@@ -43,15 +43,15 @@ template '/etc/dnsmasq.d/dbsrv-dnsmasq.conf' do
 end
 
 # create config file
-template '/etc/mysql/mariadb.conf.d/50-server.cnf' do
-  source 'mariadb-50-server.cnf.erb'
-  owner 'root'
-  group 'root'
-  mode '0640'
-  notifies :restart, "service[mariadb]"
-end
+#template '/etc/mysql/mariadb.conf.d/50-server.cnf' do
+#  source 'mariadb/mariadb-50-server.cnf.erb'
+#  owner 'root'
+#  group 'root'
+#  mode '0644'
+#  notifies :restart, "service[mariadb]"
+#end
 
-# create backup folder, place backup script and add crontab entry
+# TODO: create backup folder, place backup script and add crontab entry
 
 
-# add monitoring checks after checking the folder for icinga2 checks
+# TODO: add monitoring checks after checking the folder for icinga2 checks
